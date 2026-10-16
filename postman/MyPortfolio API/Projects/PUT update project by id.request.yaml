@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/api/projects/{{projectId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Keyboard Kickers (Updated)",
+      "description": "Added power-ups and hazards"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 4000

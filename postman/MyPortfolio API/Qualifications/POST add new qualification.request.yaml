@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/api/qualifications"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Game Programming Advanced Diploma",
+      "firstname": "Michael",
+      "lastname": "Kendrick",
+      "email": "michael@example.com",
+      "completion": "2028-04-30",
+      "description": "Centennial College, 2025 - 2028"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      const data = pm.response.json();
+      const doc = data.qualification || data;
+      if (doc && doc._id) pm.collectionVariables.set('qualificationId', doc._id);
+    language: text/javascript
+order: 1000

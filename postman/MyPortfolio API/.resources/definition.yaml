@@ -1,0 +1,9 @@
+$kind: collection
+description: ""
+variables:
+  baseUrl: http://localhost:3000
+  token: ""
+  contactId: ""
+  projectId: ""
+  qualificationId: ""
+  userId: ""

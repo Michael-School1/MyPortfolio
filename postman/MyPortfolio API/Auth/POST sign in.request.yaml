@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/signin"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "michael@example.com",
+      "password": "secret123"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      const data = pm.response.json();
+      if (data.token) pm.collectionVariables.set('token', data.token);
+      if (data.user) pm.collectionVariables.set('userId', data.user._id);
+    language: text/javascript
+order: 1000

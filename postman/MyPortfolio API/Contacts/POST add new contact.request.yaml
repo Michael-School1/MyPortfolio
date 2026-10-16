@@ -1,0 +1,25 @@
+$kind: http-request
+url: "{{baseUrl}}/api/contacts"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "firstname": "Jane",
+      "lastname": "Doe",
+      "email": "jane@example.com"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      const data = pm.response.json();
+      const doc = data.contact || data;
+      if (doc && doc._id) pm.collectionVariables.set('contactId', doc._id);
+    language: text/javascript
+order: 1000

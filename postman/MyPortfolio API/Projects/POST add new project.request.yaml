@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/api/projects"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Keyboard Kickers",
+      "firstname": "Michael",
+      "lastname": "Kendrick",
+      "email": "michael@example.com",
+      "completion": "2026-04-30",
+      "description": "Cartoon soccer game with shared keyboard controls"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      const data = pm.response.json();
+      const doc = data.project || data;
+      if (doc && doc._id) pm.collectionVariables.set('projectId', doc._id);
+    language: text/javascript
+order: 1000

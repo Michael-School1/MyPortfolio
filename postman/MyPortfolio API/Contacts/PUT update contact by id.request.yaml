@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{baseUrl}}/api/contacts/{{contactId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "firstname": "Janet",
+      "lastname": "Doe",
+      "email": "janet@example.com"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 4000

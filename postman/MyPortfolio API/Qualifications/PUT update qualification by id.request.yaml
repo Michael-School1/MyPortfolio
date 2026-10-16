@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{baseUrl}}/api/qualifications/{{qualificationId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "description": "Centennial College, 2025 - 2028 (in progress)"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 4000

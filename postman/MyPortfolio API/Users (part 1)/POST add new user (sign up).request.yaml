@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/api/users"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Michael Kendrick",
+      "email": "michael@example.com",
+      "password": "secret123"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      const data = pm.response.json();
+      const doc = data.user || data;
+      if (doc && doc._id) pm.collectionVariables.set('userId', doc._id);
+    language: text/javascript
+order: 1000

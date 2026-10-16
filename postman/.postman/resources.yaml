@@ -1,0 +1,7 @@
+# Use this workspace to collaborate
+workspace:
+  id: 5b33f17d-93d7-44ba-8020-0941b75f602e
+
+localResources:
+  collections:
+    - ../MyPortfolio API
