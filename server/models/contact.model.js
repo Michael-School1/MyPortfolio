@@ -18,6 +18,18 @@ const ContactSchema = new mongoose.Schema({
     match: [/.+@.+\..+/, 'Please fill a valid email address'],
     required: 'Email is required',
   },
+  contactNumber: {
+    type: String,
+    trim: true,
+  },
+  message: {
+    type: String,
+    trim: true,
+  },
+  created: {
+    type: Date,
+    default: Date.now,
+  },
 })
 
 export default mongoose.model('Contact', ContactSchema)

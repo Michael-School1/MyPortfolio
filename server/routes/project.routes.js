@@ -5,16 +5,16 @@ import authCtrl from '../controllers/auth.controller.js'
 const router = express.Router()
 
 // Anyone can view projects (GET).
-// Adding, editing and deleting projects requires a signed-in user.
+// Only the admin can add, edit and delete projects.
 router.route('/api/projects')
   .get(projectCtrl.list)
-  .post(authCtrl.requireSignin, projectCtrl.create)
-  .delete(authCtrl.requireSignin, projectCtrl.removeAll)
+  .post(authCtrl.requireSignin, authCtrl.isAdmin, projectCtrl.create)
+  .delete(authCtrl.requireSignin, authCtrl.isAdmin, projectCtrl.removeAll)
 
 router.route('/api/projects/:projectId')
   .get(projectCtrl.read)
-  .put(authCtrl.requireSignin, projectCtrl.update)
-  .delete(authCtrl.requireSignin, projectCtrl.remove)
+  .put(authCtrl.requireSignin, authCtrl.isAdmin, projectCtrl.update)
+  .delete(authCtrl.requireSignin, authCtrl.isAdmin, projectCtrl.remove)
 
 router.param('projectId', projectCtrl.projectByID)
 

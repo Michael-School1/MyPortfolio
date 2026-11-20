@@ -1,9 +1,12 @@
 import { useState } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useAuth } from "../lib/useAuth"
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
+  const { session, isAdmin, logout } = useAuth()
 
   const navigationLinks = [
     { name: "Home", path: "/" },
@@ -16,6 +19,12 @@ function Navbar() {
 
   function closeMenu() {
     setMenuOpen(false)
+  }
+
+  async function handleSignOut() {
+    closeMenu()
+    await logout()
+    navigate("/")
   }
 
   return (
@@ -101,14 +110,48 @@ function Navbar() {
         </div>
 
 
-        {/* System Status */}
-        <div className="hidden items-center gap-2 lg:flex">
+        {/* Account */}
+        <div className="hidden items-center gap-3 md:flex">
 
-          <span className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
+          {session ? (
+            <>
+              <div className="hidden text-right lg:block">
 
-          <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
-            System Online
-          </span>
+                <p className="font-mono text-xs text-white">
+                  {session.user.name}
+                </p>
+
+                <p className={`font-mono text-[10px] uppercase tracking-widest ${isAdmin ? "text-cyan-400" : "text-slate-500"}`}>
+                  {isAdmin ? "Admin" : "User"}
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="border border-slate-700 px-4 py-2 font-mono text-xs uppercase tracking-wider text-slate-300 transition hover:border-cyan-400 hover:text-cyan-400"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/signin"
+                className="px-3 py-2 font-mono text-xs uppercase tracking-wider text-slate-400 transition hover:text-white"
+              >
+                Sign In
+              </Link>
+
+              <Link
+                to="/signup"
+                className="border border-cyan-400 px-4 py-2 font-mono text-xs uppercase tracking-wider text-cyan-400 transition hover:bg-cyan-400 hover:text-slate-950"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
 
         </div>
 
@@ -162,13 +205,46 @@ function Navbar() {
 
           </div>
 
-          <div className="mt-5 flex items-center gap-2">
+          <div className="mt-5 flex flex-col gap-3">
 
-            <span className="h-2 w-2 rounded-full bg-green-400" />
+            {session ? (
+              <>
+                <p className="font-mono text-xs text-slate-400">
+                  Signed in as <span className="text-white">{session.user.name}</span>{" "}
+                  <span className={isAdmin ? "text-cyan-400" : "text-slate-500"}>
+                    [{isAdmin ? "ADMIN" : "USER"}]
+                  </span>
+                </p>
 
-            <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
-              System Online
-            </span>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="border border-slate-700 py-3 font-mono text-sm uppercase tracking-wider text-slate-300 transition hover:border-cyan-400 hover:text-cyan-400"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+
+                <Link
+                  to="/signin"
+                  onClick={closeMenu}
+                  className="border border-slate-700 py-3 text-center font-mono text-sm uppercase tracking-wider text-slate-300 transition hover:border-cyan-400 hover:text-cyan-400"
+                >
+                  Sign In
+                </Link>
+
+                <Link
+                  to="/signup"
+                  onClick={closeMenu}
+                  className="border border-cyan-400 py-3 text-center font-mono text-sm uppercase tracking-wider text-cyan-400 transition hover:bg-cyan-400 hover:text-slate-950"
+                >
+                  Sign Up
+                </Link>
+
+              </div>
+            )}
 
           </div>
 

@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:3000/api/projects/6af60b765814ad12b69080bb
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \  \"epitaph\": \"Gone but not forgotten.\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0wwx}}"
+order: 11000

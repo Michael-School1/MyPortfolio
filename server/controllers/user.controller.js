@@ -1,10 +1,12 @@
 import extend from 'lodash/extend.js'
+import omit from 'lodash/omit.js'
 import User from '../models/user.model.js'
 import errorHandler from '../helpers/dbErrorHandler.js'
 
 // POST /api/users - add a new user (sign up)
+// New users always get the "user" role. The role field from the request is ignored.
 const create = async (req, res) => {
-  const user = new User(req.body)
+  const user = new User(omit(req.body, ['role']))
   try {
     await user.save()
     return res.status(201).json({ message: 'Successfully signed up!', user })
@@ -16,7 +18,7 @@ const create = async (req, res) => {
 // GET /api/users - get all users (password hash is never included)
 const list = async (req, res) => {
   try {
-    const users = await User.find().select('name email created updated')
+    const users = await User.find().select('name email role created updated')
     return res.json(users)
   } catch (err) {
     return res.status(400).json({ error: errorHandler.getErrorMessage(err) })
@@ -45,7 +47,7 @@ const read = (req, res) => {
 // PUT /api/users/:userId - update user by id
 const update = async (req, res) => {
   try {
-    const user = extend(req.profile, req.body)
+    const user = extend(req.profile, omit(req.body, ['role']))
     user.updated = Date.now()
     await user.save()
     return res.json(user)

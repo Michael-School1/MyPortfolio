@@ -14,6 +14,12 @@ const config = {
   // Use MONGODB_URI from .env (Atlas or local). Falls back to a local MongoDB
   // server with a database named "Portfolio".
   mongoUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/Portfolio',
+  // The admin account that is created in the database when the server starts.
+  admin: {
+    name: process.env.ADMIN_NAME || 'Admin',
+    email: process.env.ADMIN_EMAIL || 'admin@portfolio.com',
+    password: process.env.ADMIN_PASSWORD || 'admin123',
+  },
 }
 
 export default config

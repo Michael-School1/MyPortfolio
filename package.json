@@ -1,7 +1,7 @@
 {
   "name": "myportfolio",
   "version": "1.0.0",
-  "description": "COMP229 Assignment 2 - Portfolio backend (Node.js, Express REST APIs, MongoDB) with the Assignment 1 React frontend in /client",
+  "description": "COMP229 Portfolio - full stack app: Node.js/Express REST APIs, MongoDB, JWT auth with admin/user roles, React frontend in /client",
   "type": "module",
   "main": "server.js",
   "author": "Michael Kendrick",
@@ -10,7 +10,9 @@
     "start": "node server.js",
     "server": "nodemon --watch server --watch config --watch server.js server.js",
     "dev": "cd client && npm run dev",
-    "install:all": "npm install && cd client && npm install"
+    "install:all": "npm install && cd client && npm install",
+    "build": "npm install --prefix client --include=dev && npm run build --prefix client",
+    "seed:admin": "node server/seed-admin.js"
   },
   "dependencies": {
     "compression": "^1.8.0",
@@ -26,5 +28,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

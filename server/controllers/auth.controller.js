@@ -14,15 +14,15 @@ const signin = async (req, res) => {
       return res.status(401).json({ error: "Email and password don't match." })
     }
 
-    // The token stores the user's id and is signed with our secret
-    const token = jwt.sign({ _id: user._id }, config.jwtSecret, { expiresIn: '1d' })
+    // The token stores the user's id and role and is signed with our secret
+    const token = jwt.sign({ _id: user._id, role: user.role }, config.jwtSecret, { expiresIn: '1d' })
 
     // Also save the token in a cookie called "t"
     res.cookie('t', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 })
 
     return res.json({
       token,
-      user: { _id: user._id, name: user.name, email: user.email },
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
     })
   } catch {
     return res.status(401).json({ error: 'Could not sign in' })
@@ -37,7 +37,7 @@ const signout = (req, res) => {
 
 // Middleware: only lets the request continue if a valid JWT is sent.
 // The token can be sent as "Authorization: Bearer <token>" or in the "t" cookie.
-// The decoded token ({ _id }) is placed on req.auth.
+// The decoded token ({ _id, role }) is placed on req.auth.
 const requireSignin = expressjwt({
   secret: config.jwtSecret,
   algorithms: ['HS256'],
@@ -63,4 +63,18 @@ const hasAuthorization = (req, res, next) => {
   next()
 }
 
-export default { signin, signout, requireSignin, hasAuthorization }
+// Middleware: only the admin may create, update or delete portfolio data.
+// The role is read from the database so a changed role takes effect right away.
+const isAdmin = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.auth && req.auth._id).select('role')
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({ error: 'Admin access required' })
+    }
+    next()
+  } catch {
+    return res.status(403).json({ error: 'Admin access required' })
+  }
+}
+
+export default { signin, signout, requireSignin, hasAuthorization, isAdmin }

@@ -5,16 +5,16 @@ import authCtrl from '../controllers/auth.controller.js'
 const router = express.Router()
 
 // Anyone can send a contact message (POST).
-// Reading, editing and deleting messages requires a signed-in user.
+// Only the admin can read, edit and delete messages.
 router.route('/api/contacts')
-  .get(authCtrl.requireSignin, contactCtrl.list)
+  .get(authCtrl.requireSignin, authCtrl.isAdmin, contactCtrl.list)
   .post(contactCtrl.create)
-  .delete(authCtrl.requireSignin, contactCtrl.removeAll)
+  .delete(authCtrl.requireSignin, authCtrl.isAdmin, contactCtrl.removeAll)
 
 router.route('/api/contacts/:contactId')
-  .get(authCtrl.requireSignin, contactCtrl.read)
-  .put(authCtrl.requireSignin, contactCtrl.update)
-  .delete(authCtrl.requireSignin, contactCtrl.remove)
+  .get(authCtrl.requireSignin, authCtrl.isAdmin, contactCtrl.read)
+  .put(authCtrl.requireSignin, authCtrl.isAdmin, contactCtrl.update)
+  .delete(authCtrl.requireSignin, authCtrl.isAdmin, contactCtrl.remove)
 
 router.param('contactId', contactCtrl.contactByID)
 

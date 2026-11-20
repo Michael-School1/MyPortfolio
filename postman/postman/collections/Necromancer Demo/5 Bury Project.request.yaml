@@ -1,0 +1,25 @@
+$kind: http-request
+url: http://localhost:3000/api/projects
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"name\": \"Dungeon Crawler\",\r
+
+    \  \"description\": \"Top-down roguelike, half done\",\r
+
+    \  \"repoLink\": \"https://github.com/example/dungeon-crawler\",\r
+
+    \  \"techStack\": [\"Unity\", \"C#\"],\r
+
+    \  \"causeOfDeath\": \"Scope creep\",\r
+
+    \  \"epitaph\": \"It had 47 menus and no gameplay.\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_070x}}"
+order: 5000

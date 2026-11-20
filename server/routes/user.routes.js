@@ -4,15 +4,15 @@ import authCtrl from '../controllers/auth.controller.js'
 
 const router = express.Router()
 
-// Anyone can sign up (POST) and see the list of users (GET).
-// Deleting every user requires a signed-in user.
+// Anyone can sign up (POST).
+// Only the admin can see the list of users or delete every user.
 router.route('/api/users')
-  .get(userCtrl.list)
+  .get(authCtrl.requireSignin, authCtrl.isAdmin, userCtrl.list)
   .post(userCtrl.create)
-  .delete(authCtrl.requireSignin, userCtrl.removeAll)
+  .delete(authCtrl.requireSignin, authCtrl.isAdmin, userCtrl.removeAll)
 
 // Protected routes: you must be signed in, and you can only
-// view / edit / delete your OWN account.
+// edit / delete your OWN account.
 router.route('/api/users/:userId')
   .get(authCtrl.requireSignin, userCtrl.read)
   .put(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.update)

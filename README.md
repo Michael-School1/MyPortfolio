@@ -1,6 +1,25 @@
-# MyPortfolio — COMP229 Assignment 2
+# MyPortfolio — COMP229 Full Stack Portfolio
 
-Portfolio application: **Node.js + Express REST APIs + MongoDB (Mongoose)** backend, with the **Assignment 1 React portfolio** as the frontend in `client/`.
+Full stack portfolio application: **Node.js + Express REST APIs + MongoDB (Mongoose)** backend with JWT authentication, and a **React (Vite + TypeScript)** frontend in `client/`.
+
+Assignment 3 / Lab 3 adds:
+
+- **Sign Up** and **Sign In** pages, and Sign Out in the navbar
+- **Contact**, **Education (Qualification)** and **Project** forms built with **react-hook-form** and **Material UI**
+- The frontend calls the backend APIs, so everything entered is saved in MongoDB
+- **User roles:** the **admin** can add, edit and delete projects, qualifications and contact messages. **Users** can only view them.
+- The Express server also serves the built React site, so the whole app runs as one service in the cloud
+
+## Admin account
+
+The admin is created in the database automatically when the server starts. The credentials are set in `.env` (defaults shown):
+
+| Setting | Default |
+|---|---|
+| ADMIN_EMAIL | admin@portfolio.com |
+| ADMIN_PASSWORD | admin123 |
+
+Anyone else can sign up on the Sign Up page and gets the **user** role. You can also run `npm run seed:admin` to create the admin without starting the server.
 
 ## Folder structure
 
@@ -11,11 +30,16 @@ MyPortfolio/
 ├── .env.example              # Copy to .env and fill in your values
 ├── server/
 │   ├── express.js            # Express app, middleware, routes
-│   ├── helpers/dbErrorHandler.js
+│   ├── helpers/              # dbErrorHandler.js, seedAdmin.js
+│   ├── seed-admin.js         # npm run seed:admin
 │   ├── models/               # contact, project, qualification, user
 │   ├── controllers/          # CRUD logic + auth.controller.js (JWT)
 │   └── routes/               # REST API routes + auth.routes.js
-├── client/                   # Assignment 1 React app (Vite + TypeScript)
+├── client/                   # React app (Vite + TypeScript + Material UI)
+│   └── src/
+│       ├── lib/              # api.ts (fetch calls), auth-helper.ts, auth context
+│       ├── components/       # Navbar, EntryManager, ContactMessages, forms/
+│       └── pages/            # Home, About, Projects, Education, Services, Contact, Signin, Signup
 └── postman/                  # Postman collection for testing every API
 ```
 
@@ -50,44 +74,60 @@ npm run dev                   # runs Vite (5173) AND the Express server (3000) t
 ```
 
 - Frontend: http://localhost:5173
-- Backend welcome message: http://localhost:3000 → `{"message":"Welcome to My Portfolio application."}`
+- Backend welcome message: http://localhost:3000/api → `{"message":"Welcome to My Portfolio application."}`
 - Console should print `Server started on port 3000.` and `Connected to the database! (Portfolio)`
 
 Run just the backend: `node server.js` (or `npm run server` for auto-restart) from the root folder.
+
+### Production build (what the cloud server runs)
+
+```bash
+npm install
+npm run build     # builds the React site into client/dist
+npm start         # Express serves the API and the React site on one port
+```
+
+## Deploying (Render + MongoDB Atlas)
+
+1. Create a free MongoDB Atlas cluster and copy its `mongodb+srv://...` connection string (with `/Portfolio` before the `?`).
+2. On Render, create a **Web Service** from this GitHub repo:
+   - Build command: `npm install && npm run build`
+   - Start command: `npm start`
+3. Add the environment variables `MONGODB_URI`, `JWT_SECRET`, `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
 
 ## 3. REST API
 
 | Method | URL | Action | Auth |
 |---|---|---|---|
-| GET | /api/contacts | get all contacts | token |
-| GET | /api/contacts/:id | get contact by id | token |
+| GET | /api/contacts | get all contacts | admin |
+| GET | /api/contacts/:id | get contact by id | admin |
 | POST | /api/contacts | add new contact | public |
-| PUT | /api/contacts/:id | update contact by id | token |
-| DELETE | /api/contacts/:id | remove contact by id | token |
-| DELETE | /api/contacts | remove all contacts | token |
+| PUT | /api/contacts/:id | update contact by id | admin |
+| DELETE | /api/contacts/:id | remove contact by id | admin |
+| DELETE | /api/contacts | remove all contacts | admin |
 | GET | /api/projects | get all projects | public |
 | GET | /api/projects/:id | get project by id | public |
-| POST | /api/projects | add new project | token |
-| PUT | /api/projects/:id | update project by id | token |
-| DELETE | /api/projects/:id | remove project by id | token |
-| DELETE | /api/projects | remove all projects | token |
+| POST | /api/projects | add new project | admin |
+| PUT | /api/projects/:id | update project by id | admin |
+| DELETE | /api/projects/:id | remove project by id | admin |
+| DELETE | /api/projects | remove all projects | admin |
 | GET | /api/qualifications | get all qualifications | public |
 | GET | /api/qualifications/:id | get qualification by id | public |
-| POST | /api/qualifications | add new qualification | token |
-| PUT | /api/qualifications/:id | update qualification by id | token |
-| DELETE | /api/qualifications/:id | remove qualification by id | token |
-| DELETE | /api/qualifications | remove all qualifications | token |
-| GET | /api/users | get all users | public |
+| POST | /api/qualifications | add new qualification | admin |
+| PUT | /api/qualifications/:id | update qualification by id | admin |
+| DELETE | /api/qualifications/:id | remove qualification by id | admin |
+| DELETE | /api/qualifications | remove all qualifications | admin |
+| GET | /api/users | get all users | admin |
 | GET | /api/users/:id | get user by id | token |
 | POST | /api/users | add new user (sign up) | public |
 | PUT | /api/users/:id | update user by id | token (own account) |
 | DELETE | /api/users/:id | remove user by id | token (own account) |
-| DELETE | /api/users | remove all users | token |
+| DELETE | /api/users | remove all users | admin |
 | POST | /auth/signin | sign in, returns JWT | public |
 | GET | /auth/signout | sign out (clears cookie) | public |
 
-"token" = protected route. Send the JWT from `/auth/signin` as a header: `Authorization: Bearer <token>`.
-Without it you get `401 UnauthorizedError: No authorization token was found`.
+"token" = any signed-in user. "admin" = signed in as the admin. Send the JWT from `/auth/signin` as a header: `Authorization: Bearer <token>`.
+Without a token you get `401 UnauthorizedError: No authorization token was found`. A signed-in user who is not the admin gets `403 Admin access required`.
 
 ## 4. Testing (Part 5)
 
@@ -106,7 +146,8 @@ Suggested order: Users → Create user → Auth → Sign in → then Contacts, P
 { "email": "michael@example.com", "password": "secret123" }
 
 // POST /api/contacts
-{ "firstname": "Jane", "lastname": "Doe", "email": "jane@example.com" }
+{ "firstname": "Jane", "lastname": "Doe", "email": "jane@example.com",
+  "contactNumber": "(416) 555-0199", "message": "Hi Michael!" }
 
 // POST /api/projects
 { "title": "Keyboard Kickers", "firstname": "Michael", "lastname": "Kendrick",

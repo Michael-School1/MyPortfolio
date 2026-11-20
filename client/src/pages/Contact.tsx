@@ -1,15 +1,20 @@
-import type { FormEvent } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState } from "react"
+import ContactForm from "../components/forms/ContactForm"
+import ContactMessages from "../components/ContactMessages"
+import { createContact } from "../lib/api"
+import { useAuth } from "../lib/useAuth"
+import type { ContactInput } from "../lib/types"
 
 function Contact() {
-  const navigate = useNavigate()
+  const { isAdmin } = useAuth()
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  // Changes after each message so the admin's inbox reloads
+  const [sentCount, setSentCount] = useState(0)
 
-    // The form does not send data anywhere yet.
-    // After submission, return the visitor to the Home page.
-    navigate("/")
+  // Saves the message to MongoDB through POST /api/contacts
+  async function sendMessage(values: ContactInput) {
+    await createContact(values)
+    setSentCount((count) => count + 1)
   }
 
   return (
@@ -195,153 +200,20 @@ function Contact() {
               </div>
 
 
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-6"
-              >
-
-                {/* Names */}
-                <div className="grid gap-6 sm:grid-cols-2">
-
-                  <div>
-
-                    <label
-                      htmlFor="firstName"
-                      className="mb-2 block font-mono text-xs uppercase tracking-wider text-slate-500"
-                    >
-                      First Name
-                    </label>
-
-                    <input
-                      id="firstName"
-                      name="firstName"
-                      type="text"
-                      required
-                      placeholder="Michael"
-                      className="w-full border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-cyan-400"
-                    />
-
-                  </div>
-
-
-                  <div>
-
-                    <label
-                      htmlFor="lastName"
-                      className="mb-2 block font-mono text-xs uppercase tracking-wider text-slate-500"
-                    >
-                      Last Name
-                    </label>
-
-                    <input
-                      id="lastName"
-                      name="lastName"
-                      type="text"
-                      required
-                      placeholder="Kendrick"
-                      className="w-full border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-cyan-400"
-                    />
-
-                  </div>
-
-                </div>
-
-
-                {/* Contact Number */}
-                <div>
-
-                  <label
-                    htmlFor="contactNumber"
-                    className="mb-2 block font-mono text-xs uppercase tracking-wider text-slate-500"
-                  >
-                    Contact Number
-                  </label>
-
-                  <input
-                    id="contactNumber"
-                    name="contactNumber"
-                    type="tel"
-                    required
-                    placeholder="(416) 555-0123"
-                    className="w-full border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-cyan-400"
-                  />
-
-                </div>
-
-
-                {/* Email */}
-                <div>
-
-                  <label
-                    htmlFor="email"
-                    className="mb-2 block font-mono text-xs uppercase tracking-wider text-slate-500"
-                  >
-                    Email Address
-                  </label>
-
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="yourname@example.com"
-                    className="w-full border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-cyan-400"
-                  />
-
-                </div>
-
-
-                {/* Message */}
-                <div>
-
-                  <label
-                    htmlFor="message"
-                    className="mb-2 block font-mono text-xs uppercase tracking-wider text-slate-500"
-                  >
-                    Message
-                  </label>
-
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={7}
-                    required
-                    placeholder="Write your message here..."
-                    className="w-full resize-none border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-cyan-400"
-                  />
-
-                </div>
-
-
-                {/* Submit */}
-                <div className="flex flex-col justify-between gap-5 border-t border-slate-800 pt-6 sm:flex-row sm:items-center">
-
-                  <p className="font-mono text-[10px] uppercase tracking-wider text-slate-600">
-                    FORM_STATUS: READY
-                  </p>
-
-                  <button
-                    type="submit"
-                    className="group flex items-center justify-center gap-3 bg-cyan-400 px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-slate-950 transition duration-300 hover:bg-cyan-300"
-                  >
-
-                    Send Message
-
-                    <span className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-
-                  </button>
-
-                </div>
-
-              </form>
+              <ContactForm
+                successMessage="Message sent! It has been saved and I will get back to you soon."
+                onSave={sendMessage}
+              />
 
             </div>
 
           </div>
 
         </div>
+
+
+        {/* Admin Inbox */}
+        {isAdmin && <ContactMessages refreshKey={sentCount} />}
 
 
         {/* Bottom Terminal */}

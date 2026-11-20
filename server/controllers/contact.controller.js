@@ -16,7 +16,7 @@ const create = async (req, res) => {
 // GET /api/contacts - get all contacts
 const list = async (req, res) => {
   try {
-    const contacts = await Contact.find()
+    const contacts = await Contact.find().sort({ created: -1 })
     return res.json(contacts)
   } catch (err) {
     return res.status(400).json({ error: errorHandler.getErrorMessage(err) })

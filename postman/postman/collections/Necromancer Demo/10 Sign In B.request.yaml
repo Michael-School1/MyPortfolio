@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://localhost:3000/auth/signin
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"demo2@test.com\",\r
+
+    \  \"password\": \"password123\"\r
+
+    }"
+order: 10000

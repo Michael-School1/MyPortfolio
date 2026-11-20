@@ -1,3 +1,5 @@
+import EntryManager from "../components/EntryManager"
+
 function Projects() {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
@@ -420,6 +422,15 @@ function Projects() {
           </div>
 
         </article>
+
+
+        {/* Projects from the database */}
+        <EntryManager
+          collection="projects"
+          sectionCode="DATABASE / PROJECTS"
+          heading="Project Entries"
+          singular="Project"
+        />
 
 
         {/* Footer Note */}

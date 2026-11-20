@@ -1,3 +1,5 @@
+import EntryManager from "../components/EntryManager"
+
 function Education() {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
@@ -308,6 +310,15 @@ function Education() {
           </div>
 
         </div>
+
+
+        {/* Qualifications from the database */}
+        <EntryManager
+          collection="qualifications"
+          sectionCode="DATABASE / QUALIFICATIONS"
+          heading="Academic Qualifications"
+          singular="Qualification"
+        />
 
 
         {/* Footer */}
