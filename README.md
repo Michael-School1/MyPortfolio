@@ -1,5 +1,5 @@
 # MyPortfolio — COMP229 Full Stack Portfolio
-
+Michael
 Full stack portfolio application: **Node.js + Express REST APIs + MongoDB (Mongoose)** backend with JWT authentication, and a **React (Vite + TypeScript)** frontend in `client/`.
 
 Assignment 3 / Lab 3 adds:
